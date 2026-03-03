@@ -30,8 +30,4 @@ def machine_data():
         "health": health,
         "risk": risk,
         "recommendation": recommendation
-<<<<<<< HEAD
     }
-=======
-    }
->>>>>>> 0b362ad3bdd5b14df3289c0b9b29489202ca3d0e

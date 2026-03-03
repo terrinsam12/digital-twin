@@ -1,29 +1,33 @@
+from fastapi import FastAPI
 import random
 
-class DigitalTwinService:
+app = FastAPI()
 
-    def get_machine_state(self):
-        temperature = random.uniform(40, 90)
-        vibration = random.uniform(0.1, 2.5)
-        current = random.uniform(5, 20)
+@app.get("/")
+def home():
+    return {"message": "Digital Twin API Running"}
 
-        health = max(0, 100 - (temperature * 0.3 + vibration * 10 + current * 0.5))
-        risk = 1 - (health / 100)
+@app.get("/machine")
+def machine_data():
+    temperature = round(random.uniform(50, 80), 2)
+    vibration = round(random.uniform(0.5, 2.0), 2)
+    current = round(random.uniform(10, 20), 2)
 
-        if risk < 0.3:
-            recommendation = "Normal Operation"
-        elif risk < 0.6:
-            recommendation = "Schedule Maintenance"
-        else:
-            recommendation = "High Failure Risk"
+    health = round(100 - (temperature * 0.3 + vibration * 20 + current * 0.2), 2)
+    risk = round(1 - health / 100, 2)
 
-        return {
-            "temperature": round(temperature, 2),
-            "vibration": round(vibration, 2),
-            "current": round(current, 2),
-            "health": round(health, 2),
-            "risk": round(risk, 2),
-            "recommendation": recommendation
-        }
+    if risk > 0.7:
+        recommendation = "Immediate Maintenance"
+    elif risk > 0.4:
+        recommendation = "Schedule Maintenance"
+    else:
+        recommendation = "Normal Operation"
 
-service = DigitalTwinService()
+    return {
+        "temperature": temperature,
+        "vibration": vibration,
+        "current": current,
+        "health": health,
+        "risk": risk,
+        "recommendation": recommendation
+    }

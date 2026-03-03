@@ -1,9 +1,13 @@
-class FleetManager:
-    def __init__(self):
-        self.machines = {}
+import random
 
-    def update_machine(self, machine_id, status):
-        self.machines[machine_id] = status
+def rank_motors():
 
-    def get_fleet_status(self):
-        return self.machines
+    motors = []
+
+    for i in range(1, 101):
+        health = random.uniform(40, 100)
+        motors.append({"motor_id": i, "health": health})
+
+    motors.sort(key=lambda x: x["health"])
+
+    return motors[:10]

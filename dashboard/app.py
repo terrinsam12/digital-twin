@@ -2,33 +2,59 @@ import streamlit as st
 import requests
 import time
 
-st.set_page_config(page_title="Digital Twin Dashboard", layout="wide")
+st.set_page_config(layout="wide")
 
-st.title("Machine Digital Twin Monitoring")
+st.title("Digital Twin Monitoring Dashboard")
 
-API_URL = "http://127.0.0.1:8000/machine"
+# Layout
+col1, col2, col3 = st.columns(3)
+col4, col5, col6 = st.columns(3)
 
-placeholder = st.empty()
+temp_box = col1.empty()
+vib_box = col2.empty()
+curr_box = col3.empty()
+health_box = col4.empty()
+fail_box = col5.empty()
+rpm_box = col6.empty()
+
+chart_placeholder = st.empty()
+
+temperature_history = []
+vibration_history = []
+health_history = []
 
 while True:
-    try:
-        data = requests.get(API_URL).json()
+    data = requests.get("http://127.0.0.1:8000/machine").json()
 
-        with placeholder.container():
-            col1, col2, col3 = st.columns(3)
+    temp = data["temperature"]
+    vib = data["vibration"]
+    curr = data["current"]
+    health = data["health"]
+    failure = data["failure_probability"]
+    rpm = data["recommended_rpm"]
 
-            col1.metric("Temperature", f"{data['temperature']:.2f} °C")
-            col2.metric("Vibration", f"{data['vibration']:.2f} g")
-            col3.metric("Current", f"{data['current']:.2f} A")
+    # Update metrics
+    temp_box.metric("Temperature (°C)", temp)
+    vib_box.metric("Vibration", vib)
+    curr_box.metric("Current (A)", curr)
+    health_box.metric("Health (%)", health)
+    fail_box.metric("Failure Probability", failure)
+    rpm_box.metric("Recommended RPM", rpm)
 
-            st.subheader("Health Status")
-            st.progress(data["health"] / 100)
+    # Store history
+    temperature_history.append(temp)
+    vibration_history.append(vib)
+    health_history.append(health)
 
-            st.write("Risk Level:", data["risk"])
-            st.write("Recommendation:", data["recommendation"])
+    # Keep last 50 values
+    temperature_history = temperature_history[-50:]
+    vibration_history = vibration_history[-50:]
+    health_history = health_history[-50:]
 
-        time.sleep(2)
+    chart_placeholder.line_chart({
+        "Temperature": temperature_history,
+        "Vibration": vibration_history,
+        "Health": health_history
+    })
 
-    except:
-        st.error("API not running")
-        time.sleep(2)
+    time.sleep(2)

@@ -1,9 +1,8 @@
-class EconomicOptimizer:
-    @staticmethod
-    def recommend_action(health, risk):
-        if risk > 0.6:
-            return "Immediate Maintenance"
-        elif health < 50:
-            return "Schedule Maintenance"
-        else:
-            return "Normal Operation"
+def optimize_rpm(vibration):
+
+    if vibration > 1.5:
+        return 1100
+    elif vibration > 1:
+        return 1400
+    else:
+        return 1800
